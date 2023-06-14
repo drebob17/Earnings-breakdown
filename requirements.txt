@@ -1,0 +1,11 @@
+#pip install -r requirements.txt
+
+langchain
+PyPDF2
+streamlit
+huggingface_hub
+transformers
+sentence_transformers
+InstructorEmbedding
+python-dotenv
+faiss-cpu
