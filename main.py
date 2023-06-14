@@ -1,7 +1,3 @@
-#Pip install
-#pip install -U sentence-transformers
-#pip install langchain
-
 #streamlit for UI/app interface
 import streamlit as st
 
