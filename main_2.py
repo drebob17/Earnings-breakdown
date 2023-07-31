@@ -1,12 +1,13 @@
-#Pip install
+
 #pip install -U sentence-transformers
 #pip install langchain
 
+
+import os
 #streamlit for UI/app interface
 import streamlit as st
 
 #Import dependancies
-from langchain.llms import GPT4All
 from langchain import PromptTemplate, LLMChain
 from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
@@ -15,9 +16,10 @@ from langchain.embeddings import HuggingFaceInstructEmbeddings
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from dotenv import load_dotenv
-from htmlTemplates import css, bot_template, user_template
+from htmlTemplates import css, bot_template, user_template, basic_questions 
 from gpt4all import GPT4All
 from langchain.llms import HuggingFaceHub
+
 
 #Import PDF document loader
 from langchain.document_loaders import PyPDFLoader
@@ -33,7 +35,6 @@ from langchain.agents.agent_toolkits import (
     VectorStoreInfo
 )
 
-#PATH = 'C:/Users/andre/AppData/Local/nomic.ai/GPT4All/ggml-gpt4all-j-v1.3-groovy.bin'   #path to weights
 
 
 def get_pdf_text(pdf_docs):
@@ -46,27 +47,26 @@ def get_pdf_text(pdf_docs):
 
 def get_text_chunks(text):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=750,
-        chunk_overlap=100,
+        chunk_size=1500,
+        chunk_overlap=200,
         length_function=len
         )
     chunks = text_splitter.split_text(text)
     return chunks
 
 def get_vectorstore(text_chunks):
-    embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
+    embeddings = HuggingFaceInstructEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    #llm = GPT4All("ggml-gpt4all-j-v1.3-groovy")
+    os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
     llm = HuggingFaceHub(
-    repo_id="google/flan-t5-xxl",
-    model_kwargs={"temperature": 0.3, "max_length": 512},
-    huggingfacehub_api_token="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"
+    repo_id="tiiuae/falcon-7b",  #2 llm options
+    #repo_id="decapoda-research/llama-65b-hf",
+    model_kwargs={"temperature":.6, "max_length":64, "max_new_tokens":100},
     )
-    memory = ConversationBufferMemory(
-        memory_key='chat_history', return_messages=True)
+    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
@@ -84,8 +84,7 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
-
-
+def key
 
 def main():
     load_dotenv()
@@ -122,6 +121,9 @@ def main():
 
                 #create conversation chain
                 st.session_state.conversation = get_conversation_chain(vectorstore)
+
+                #open with key metrics
+                
 
 
 
