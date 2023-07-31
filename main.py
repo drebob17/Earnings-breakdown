@@ -15,7 +15,6 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from dotenv import load_dotenv
 from htmlTemplates import css, bot_template, user_template, basic_questions 
-from gpt4all import GPT4All
 from langchain.llms import HuggingFaceHub
 
 
